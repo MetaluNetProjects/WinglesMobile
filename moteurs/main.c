@@ -22,6 +22,8 @@ long int Seconds;
 
 #define COURANT_MAX ((COURANT_MAX_MILLIAMPERES * 57) / 500) // /1000 * 140mV/A / 5V * 4096
 
+#define ONOFF K6
+
 void setup(void) {	
 //----------- Setup ----------------
 	fruitInit();
@@ -42,9 +44,12 @@ void setup(void) {
     //DCMOTOR_INIT(B);
     dcmotorInit(A);
     dcmotorInit(B);
-    
+
     rampInit(&rampeVitesseA);
     rampInit(&rampeVitesseB);
+    
+//--- on/off switch
+    pinModeDigitalIn(ONOFF); 	// set the ONOFF pin mode to digital input
     
     EEreadMain();
 }
@@ -97,12 +102,18 @@ void loop() {
 		if(countB == 0) { digitalSet(MBEN); digitalSet(MBEN2); }
 		else if(countB == COUNT_MAX) { digitalClear(MBEN); digitalClear(MBEN2); }
 
+		if(digitalRead(ONOFF)) {
+			rampGoto(&rampeVitesseA, 0) ;
+			rampGoto(&rampeVitesseB, 0) ;
+			timeReset();
+		}
+		
 		DCMOTOR_COMPUTE(A,SYM);
 		DCMOTOR_COMPUTE(B,SYM);
 		
 		if(i++ == 10) {
 		    i = 0;
-		    printf("C P %d %d\n",DCMOTOR(A).Vars.PWMConsign, DCMOTOR(B).Vars.PWMConsign);
+		    printf("C P %d %d %d\n",DCMOTOR(A).Vars.PWMConsign, DCMOTOR(B).Vars.PWMConsign, digitalRead(ONOFF));
 		}
         
 	}
@@ -171,18 +182,38 @@ void EEdeclareMain() {
 /*---------------------------------------------------------*/
 t_time Time;
 
+#define IFTIME(min, sec) if(Seconds == toSeconds(0,min, sec))
+#define ONTIMERAMP(min, sec, vA, vB) if(Seconds == toSeconds(0,min, sec)) {rampGoto(&rampeVitesseA, vA) ; rampGoto(&rampeVitesseB, vB) ;} else
+
 void sequenceCompute()
 {
     printf("C T %d %d %d %ld\n",heures, minutes, secondes, Seconds);
     //rampGoto(&rampeVitesseA, vitesseA);
     //return;
     
-    if(Seconds == toSeconds(0,0,10)) { rampGoto(&rampeVitesseA, 500) ;}
-    else if(Seconds == toSeconds(0,0,30)) { rampGoto(&rampeVitesseB, 500) ;}
+    ONTIMERAMP(0	, 	0	, 		0		, 	0		)
+    ONTIMERAMP(0	, 	5	, 		200		, 	0		)
+    ONTIMERAMP(0	, 	15	, 		200		, 	200		)
+    ONTIMERAMP(0	, 	20	, 		0		, 	200		)
+    ONTIMERAMP(0	, 	30	, 		-100	, 	0		)
+    ONTIMERAMP(0	, 	40	, 		-150	, 	100		)
+    ONTIMERAMP(0	, 	55	, 		-250	, 	250		)
+    ONTIMERAMP(1	, 	10	, 		450		, 	0		)
+    ONTIMERAMP(1	, 	30	, 		0		, 	450		)
+    ONTIMERAMP(1	, 	50	, 		0		, 	0		)
+    ONTIMERAMP(2	, 	20	, 		-1023	, 	1023	)
+    ONTIMERAMP(2	, 	35	, 		1023	, 	-1023	)
+    ONTIMERAMP(2	, 	50	, 		0		, 	0		)
+
+
+
+	IFTIME(3, 20) timeReset(); else
+	IFTIME(60, 0) timeReset();
+    /*else if(Seconds == toSeconds(0,0,30)) { rampGoto(&rampeVitesseB, 500) ;}
     else if(Seconds == toSeconds(0,1,0)) { rampGoto(&rampeVitesseA, -500) ;}
     else if(Seconds == toSeconds(0,1,1)) { rampGoto(&rampeVitesseB, -500) ;}
     else if(Seconds == toSeconds(0,1,40)) { rampGoto(&rampeVitesseA, 0) ;}
-    else if(Seconds == toSeconds(0,1,55)) { rampGoto(&rampeVitesseB, 0) ;}
+    else if(Seconds == toSeconds(0,1,55)) { rampGoto(&rampeVitesseB, 0) ;}*/
     //else if(Seconds < toSeconds(0,1,30)) { digitalSet(LAMP1) ;}
     
 }  
