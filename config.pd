@@ -1,4 +1,4 @@
-#N canvas 516 153 847 613 10;
+#N canvas 432 101 847 813 10;
 #X declare -stdpath moonlib;
 #X declare -stdpath hcs;
 #X declare -stdpath ggee;
@@ -24,9 +24,9 @@
 #X obj 395 549 fruit/send2 fruit1;
 #X obj 21 38 pied/pied 0 41424;
 #X obj 319 304 hsl 128 15 -1023 1023 0 0 empty empty commande_VitesseA
--2 -8 0 10 -262144 -1 -1 6350 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 459 305 hsl 128 15 -1023 1023 0 0 empty empty commande_VitesseB
--2 -8 0 10 -262144 -1 -1 6350 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X msg 399 250 0;
 #X floatatom 136 328 5 0 0 0 - - -, f 5;
 #X obj 19 141 fruit/fruit 1 fruit1 10 moteurs;
@@ -35,21 +35,21 @@
 #X obj 22 419 * 5;
 #X obj 22 441 / 0.14;
 #X obj 22 474 nbx 5 14 -1e+37 1e+37 0 0 empty empty Amperes 0 -8 0
-10 -262144 -1 -1 0.0959124 256;
+10 -262144 -1 -1 0 256;
 #X obj 250 50 ramp/ramp fruit1 122 vitesseA;
 #X floatatom 180 329 5 0 0 0 - - -, f 5;
 #X obj 549 46 ramp/ramp fruit1 123 vitesseB;
 #X msg 316 328 c 122 c 10 i \$1;
 #X msg 456 329 c 123 c 10 i \$1;
 #X obj 319 370 hsl 128 15 -1023 1023 0 0 empty empty vitesseA -2 -8
-0 10 -262144 -1 -1 6350 1;
+0 10 -262144 -1 -1 0 1;
 #X obj 459 371 hsl 128 15 -1023 1023 0 0 empty empty vitesseB -2 -8
-0 10 -262144 -1 -1 6350 1;
+0 10 -262144 -1 -1 0 1;
 #X obj 102 400 / 4096;
 #X obj 102 420 * 5;
 #X obj 102 442 / 0.14;
 #X obj 102 475 nbx 5 14 -1e+37 1e+37 0 0 empty empty Amperes 0 -8 0
-10 -262144 -1 -1 0.12207 256;
+10 -262144 -1 -1 0 256;
 #X msg 445 507 S;
 #X text 443 490 SAVE;
 #X obj 146 260 route P T;
@@ -79,14 +79,14 @@
 #X floatatom 574 348 5 0 0 0 - - -, f 5;
 #X obj 231 209 unpack f f f f;
 #X floatatom 347 245 8 0 0 0 - - -, f 8;
-#X floatatom 518 232 5 0 0 0 - - -, f 5;
-#X obj 518 179 div 3600;
-#X floatatom 584 233 5 0 0 0 - - -, f 5;
-#X obj 585 180 div 60;
-#X obj 591 207 % 60;
-#X obj 637 192 % 60;
-#X floatatom 641 217 5 0 0 0 - - -, f 5;
-#X obj 518 155 t f f f;
+#X floatatom 615 202 5 0 0 0 - - -, f 5;
+#X obj 616 172 div 3600;
+#X floatatom 672 228 5 0 0 0 - - -, f 5;
+#X obj 673 175 div 60;
+#X obj 679 202 % 60;
+#X obj 725 187 % 60;
+#X floatatom 729 212 5 0 0 0 - - -, f 5;
+#X obj 616 148 t f f f;
 #X obj 102 556 max;
 #X obj 129 555 f;
 #X floatatom 104 582 5 0 0 0 - - -, f 5;
@@ -103,10 +103,29 @@
 #X msg 658 345 c 10 c 0 c 0 c 0;
 #X obj 146 288 unpack f f f;
 #X floatatom 220 327 5 0 0 0 - - -, f 5;
-#X obj 288 458 tgl 50 0 empty empty ON/OFF 1 25 0 14 -4034 -1 -1 1
+#X obj 288 458 tgl 50 0 empty empty ON/OFF 1 25 0 14 -4034 -1 -1 0
 1;
 #X obj 259 385 change;
 #X obj 264 412 == 0;
+#X obj 198 683 t b b;
+#X obj 225 706 getdir;
+#X msg 225 726 \$1/convertTestSeq.sh;
+#X obj 225 747 ggee/shell;
+#X floatatom 129 735 5 0 0 3 mn - -, f 5;
+#X floatatom 185 733 5 0 0 3 sec - -, f 5;
+#X obj 49 683 bng 15 250 50 0 empty empty go 17 7 0 10 -4034 -1 -1
+;
+#X obj 92 682 bng 15 250 50 0 empty empty stop 17 7 0 10 -258113 -1
+-1;
+#X floatatom 56 733 5 0 0 3 line - -, f 5;
+#X obj 140 681 bng 15 250 50 0 empty empty next 17 7 0 10 -257985 -1
+-1;
+#X obj 196 662 bng 15 250 50 0 empty empty reload 17 7 0 10 -128992
+-1 -1;
+#X obj 73 706 seq/main seqpd;
+#X obj 441 206 r seq-seqpd-line;
+#X obj 441 228 list split 2;
+#X obj 441 253 unpack f f;
 #X connect 0 0 1 0;
 #X connect 0 1 39 0;
 #X connect 1 0 2 0;
@@ -189,3 +208,18 @@
 #X connect 85 0 87 0;
 #X connect 87 0 88 0;
 #X connect 88 0 86 0;
+#X connect 89 0 100 3;
+#X connect 89 1 90 0;
+#X connect 90 0 91 0;
+#X connect 91 0 92 0;
+#X connect 95 0 100 0;
+#X connect 96 0 100 1;
+#X connect 98 0 100 2;
+#X connect 99 0 89 0;
+#X connect 100 0 97 0;
+#X connect 100 1 93 0;
+#X connect 100 2 94 0;
+#X connect 101 0 102 0;
+#X connect 102 0 103 0;
+#X connect 103 0 16 0;
+#X connect 103 1 17 0;
